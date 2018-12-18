@@ -2,8 +2,6 @@
 
 `@cornerstone/communications` provides an easy way to communicate multiple isolated micro frontends (iframes).
 
-> **Important for ES5**: You will need a Polyfill for [Function.name](https://www.npmjs.com/package/function.name) in order to make it work on Internet Explorer).
-
 ## Main goals
 - TODO
 
@@ -42,4 +40,4 @@ import 'reflect-metadata';
 
 ## License
 
-This solution is licensed under GPLv3. If you need commercial support or other licensing terms, contact the author.
+This solution is licensed under GPLv3. If you need commercial support or other licensing terms, please contact the author.

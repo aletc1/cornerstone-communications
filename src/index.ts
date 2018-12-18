@@ -1,6 +1,8 @@
 import { debug } from "util";
 
 interface Message<T> {
+    type: string,
+    from: string,
     target: Target,
     payload: T
 }
@@ -16,12 +18,22 @@ function bindEvent(element: any, eventName: string, eventHandler: any) {
     }
 }
 
+export type CallbackType = (from: string, type: string, payload: any) => void;
+
 interface TargetListener {
     target: Target,
-    callback: (msg: any)=>void
+    callback: CallbackType
+}
+
+function uuidv4() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
 }
 
 class Communicator {
+    private name: string;
     private targetListeners: TargetListener[] = [];
 
     protected get isInsideIframe() {
@@ -34,6 +46,15 @@ class Communicator {
 
     constructor() {
         var self = this;
+        this.name = window.name;
+        if (!this.name) {
+            if (window.frameElement) {
+                this.name = window.frameElement.getAttribute("Id") as string;
+            }
+        }
+        if (!this.name) {
+            this.name = uuidv4();
+        }
         // Listen to messages from parent window
         bindEvent(window, 'message', function (e: any) {
             try {
@@ -41,7 +62,7 @@ class Communicator {
                 if (data.target) {
                     self.targetListeners.map(o => {
                         if (o.target == data.target) {
-                            o.callback(data.payload);
+                            o.callback(data.from, data.type, data.payload);
                         }
                     });
                 }
@@ -51,15 +72,17 @@ class Communicator {
         });
     }
 
-    public addListener<T>(target: Target, callback: (msg: T) => void) {
+    public addListener<T>(target: Target, callback: CallbackType) {
         this.targetListeners.push({ target: target, callback: callback });
     }
-    public removeListener<T>(target: Target, callback: (msg: T) => void) {
+    public removeListener<T>(target: Target, callback: CallbackType) {
         this.targetListeners = this.targetListeners.filter(o => o.target != target && o.callback != callback);
     }
 
-    public send<T>(message: T, target: Target = 'parent') {
+    public send<T>(type: string, message: T, target: Target = 'self') {
         const payload = JSON.stringify({
+            from: target == 'self' ? 'self' : this.name,
+            type: type,
             target: target,
             payload: message
         } as Message<T>);
@@ -79,7 +102,7 @@ class Communicator {
                     iframe = iframe.contentWindow;
                 }
                 iframe.postMessage(payload, '*');
-                break;
+                break; 
         }
     }
 }

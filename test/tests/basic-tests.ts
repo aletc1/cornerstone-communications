@@ -6,16 +6,20 @@ import 'mocha';
 describe('Types', () => {
     it('can send and receive messages', (done) => {
         debugger;
-        let result = "";
-        communicator.addListener<string>('self', msg => {
-            debugger;
-            result = msg;
+        let resultPayload = "";
+        let resultType = "";
+        let resultFrom = "";
+        communicator.addListener<string>('self', (from, type, payload) => {
+            resultFrom = from;
+            resultPayload = payload;
+            resultType = type;
         });
-        communicator.send<string>('hello world', 'self');
+        communicator.send<string>('msgtype', 'hello world', 'self');
 
         setTimeout(() => {
-            debugger;
-            expect(result).to.eq('hello world');
+            expect(resultPayload).to.eq('hello world');
+            expect(resultType).to.eq('msgtype');
+            expect(resultFrom).to.eq('self');
             done();                      
         }, 10);
     });
