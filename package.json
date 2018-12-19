@@ -2,9 +2,9 @@
   "name": "@cornerstone/communications",
   "version": "0.0.1",
   "description": "Another communications library between iframes",
-  "main": "lib/cornerstone-communications.js",
+  "main": "lib/cornerstone-communications.min.js",
   "unpkg": "lib/cornerstone-communications.min.js",
-  "module": "lib/cornerstone-communications.js",
+  "module": "lib/cornerstone-communications.min.js",
   "typings": "lib/index.d.ts",
   "files": [
     "lib/*.*"
