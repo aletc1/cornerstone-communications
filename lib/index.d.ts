@@ -5,8 +5,8 @@ declare class Communicator {
     private targetListeners;
     protected readonly isInsideIframe: boolean;
     constructor();
-    addListener<T>(target: Target, callback: CallbackType): void;
-    removeListener<T>(target: Target, callback: CallbackType): void;
+    addListener<T>(callback: CallbackType): void;
+    removeListener<T>(callback: CallbackType): void;
     send<T>(type: string, message: T, target?: Target): void;
 }
 declare const _default: Communicator;
