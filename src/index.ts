@@ -51,17 +51,19 @@ class Communicator {
         // Listen to messages from parent window
         bindEvent(window, 'message', function (e: any) {
             try {
-                var data = JSON.parse(e.data) as Message<any>;
-                if (data.target == 'parent' || data.target == 'self')
-                    data.target = self.name;
-                if (data.target) {
-                    self.targetListeners.map(callback => {
-                        try {
-                            callback(data.from, data.type, data.payload);
-                        } catch (error) {
-                            console.error(error);
-                        }
-                    });
+                if (typeof e.data === 'string') {
+                    var data = JSON.parse(e.data) as Message<any>;
+                    if (data.target) {
+                        if (data.target == 'parent' || data.target == 'self')
+                            data.target = self.name;
+                        self.targetListeners.map(callback => {
+                            try {
+                                callback(data.from, data.type, data.payload);
+                            } catch (error) {
+                                console.error(error);
+                            }
+                        });
+                    }
                 }
             } catch (err) {
                 console.error(err);
